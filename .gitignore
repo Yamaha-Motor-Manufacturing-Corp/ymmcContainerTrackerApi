@@ -34,3 +34,5 @@ artifacts/
 ## Secrets (extra safety)
 appsettings.Local.json
 *.secrets.json
+.config/
+
