@@ -1,0 +1,36 @@
+## Build outputs
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## VS / VS Code
+.vs/
+.vscode/
+
+## Rider
+.idea/
+
+## OS files
+Thumbs.db
+.DS_Store
+
+## Logs
+*.log
+
+## NuGet
+*.nupkg
+packages/
+.nuget/
+
+## Publish output
+publish/
+artifacts/
+
+## Secrets (extra safety)
+appsettings.Local.json
+*.secrets.json

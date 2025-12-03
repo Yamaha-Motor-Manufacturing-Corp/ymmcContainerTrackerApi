@@ -1,0 +1,89 @@
+@page
+@model YmmcContainerTrackerApi.Pages_ReturnableContainers.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>ReturnableContainers</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.ItemNo)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.ItemNo)
+        </dd>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.PackingCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.PackingCode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.PrefixCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.PrefixCode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.ContainerNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.ContainerNumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.OutsideLength)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.OutsideLength)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.OutsideWidth)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.OutsideWidth)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.OutsideHeight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.OutsideHeight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.CollapsedHeight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.CollapsedHeight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.Weight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.Weight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.PackQuantity)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.PackQuantity)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.AlternateId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.AlternateId)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="ReturnableContainers.ItemNo" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

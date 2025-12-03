@@ -1,0 +1,81 @@
+@page
+@model YmmcContainerTrackerApi.Pages_ReturnableContainers.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>ReturnableContainers</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.ItemNo" class="control-label"></label>
+                <input asp-for="ReturnableContainers.ItemNo" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.ItemNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.PackingCode" class="control-label"></label>
+                <input asp-for="ReturnableContainers.PackingCode" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.PackingCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.PrefixCode" class="control-label"></label>
+                <input asp-for="ReturnableContainers.PrefixCode" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.PrefixCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.ContainerNumber" class="control-label"></label>
+                <input asp-for="ReturnableContainers.ContainerNumber" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.ContainerNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.OutsideLength" class="control-label"></label>
+                <input asp-for="ReturnableContainers.OutsideLength" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.OutsideLength" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.OutsideWidth" class="control-label"></label>
+                <input asp-for="ReturnableContainers.OutsideWidth" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.OutsideWidth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.OutsideHeight" class="control-label"></label>
+                <input asp-for="ReturnableContainers.OutsideHeight" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.OutsideHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.CollapsedHeight" class="control-label"></label>
+                <input asp-for="ReturnableContainers.CollapsedHeight" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.CollapsedHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.Weight" class="control-label"></label>
+                <input asp-for="ReturnableContainers.Weight" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.PackQuantity" class="control-label"></label>
+                <input asp-for="ReturnableContainers.PackQuantity" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.PackQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnableContainers.AlternateId" class="control-label"></label>
+                <input asp-for="ReturnableContainers.AlternateId" class="form-control" />
+                <span asp-validation-for="ReturnableContainers.AlternateId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+

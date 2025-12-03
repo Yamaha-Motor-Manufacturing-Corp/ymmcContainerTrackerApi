@@ -1,0 +1,6 @@
+@YmmcContainerTrackerApi_HostAddress = http://localhost:5181
+
+GET {{YmmcContainerTrackerApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

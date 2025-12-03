@@ -1,0 +1,146 @@
+@page
+@model YmmcContainerTrackerApi.Pages_ReturnableContainers.IndexModel
+
+@{
+    ViewData["Title"] = "Returnable Containers";
+
+    // Read search from query string
+    var q = (Request.Query["q"].ToString() ?? "").Trim();
+
+    // Filter list in-memory (no code-behind change needed)
+    var filtered = string.IsNullOrWhiteSpace(q)
+        ? Model.ReturnableContainers
+        : Model.ReturnableContainers.Where(x =>
+            (x.ItemNo ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            (x.PackingCode ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            (x.PrefixCode ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            (x.ContainerNumber ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            (x.AlternateId ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+        ).ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <div>
+        <h1 class="h3 mb-0">Returnable Containers</h1>
+        <div class="text-muted">View / add / edit / delete container records</div>
+    </div>
+
+    <a asp-page="Create" class="btn btn-primary">
+        + Create New
+    </a>
+</div>
+
+<hr class="my-4" />
+
+<!-- Search bar -->
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <form method="get" class="d-flex gap-2 align-items-center flex-grow-1">
+        <input name="q"
+               value="@q"
+               class="form-control"
+               placeholder="Search Item No, Packing Code, Prefix Code, Container Number, Alternate ID..."
+               autocomplete="off" />
+
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+
+        @if (!string.IsNullOrWhiteSpace(q))
+        {
+            <a asp-page="./Index" class="btn btn-outline-secondary">Clear</a>
+        }
+    </form>
+
+    <div class="text-muted small">
+        Showing <strong>@filtered.Count</strong> of <strong>@Model.ReturnableContainers.Count</strong>
+    </div>
+</div>
+
+<!-- Scroll container so horizontal scroll is available immediately -->
+<div class="table-shell">
+    <div class="table-responsive rc-table">
+        <table class="table table-bordered table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].ItemNo)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].PackingCode)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].PrefixCode)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].ContainerNumber)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].OutsideLength)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].OutsideWidth)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].OutsideHeight)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].CollapsedHeight)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].Weight)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].PackQuantity)</th>
+                    <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].AlternateId)</th>
+                    <th class="text-end text-nowrap">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (filtered.Count == 0)
+                {
+                    <tr>
+                        <td colspan="12" class="text-center py-4 text-muted">
+                            No results found for "<strong>@q</strong>"
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in filtered)
+                    {
+                        <tr>
+                            <td class="fw-semibold text-nowrap">@item.ItemNo</td>
+                            <td>@item.PackingCode</td>
+                            <td>@item.PrefixCode</td>
+                            <td class="text-nowrap">@item.ContainerNumber</td>
+
+                            <td class="text-end">@item.OutsideLength</td>
+                            <td class="text-end">@item.OutsideWidth</td>
+                            <td class="text-end">@item.OutsideHeight</td>
+                            <td class="text-end">@item.CollapsedHeight</td>
+                            <td class="text-end">@item.Weight</td>
+                            <td class="text-end">@item.PackQuantity</td>
+
+                            <td class="text-nowrap">@item.AlternateId</td>
+
+                            <td class="text-end text-nowrap">
+                                <a asp-page="./Edit" asp-route-id="@item.ItemNo" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a asp-page="./Details" asp-route-id="@item.ItemNo" class="btn btn-sm btn-outline-secondary">Details</a>
+                                <a asp-page="./Delete" asp-route-id="@item.ItemNo" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .table-shell {
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: .5rem;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .rc-table {
+        max-height: calc(100vh - 320px); /* a little more space because of search bar */
+        overflow: auto;
+    }
+
+        .rc-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+    .table td, .table th {
+        padding: 0.75rem 0.9rem;
+        vertical-align: middle;
+    }
+
+    .table-bordered > :not(caption) > * > * {
+        border-width: 1px;
+    }
+</style>

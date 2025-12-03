@@ -1,0 +1,86 @@
+@page
+@model YmmcContainerTrackerApi.Pages_ReturnableContainers.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>ReturnableContainers</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.ItemNo)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.ItemNo)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.PackingCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.PackingCode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.PrefixCode)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.PrefixCode)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.ContainerNumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.ContainerNumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.OutsideLength)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.OutsideLength)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.OutsideWidth)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.OutsideWidth)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.OutsideHeight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.OutsideHeight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.CollapsedHeight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.CollapsedHeight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.Weight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.Weight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.PackQuantity)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.PackQuantity)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReturnableContainers.AlternateId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReturnableContainers.AlternateId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.ReturnableContainers.ItemNo">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
