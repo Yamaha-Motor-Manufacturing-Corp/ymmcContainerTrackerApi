@@ -18,10 +18,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<ReturnableContainers> ReturnableContainers { get; set; }
     public virtual DbSet<ReturnableContainersStage> ReturnableContainersStage { get; set; }
 
-    // ❌ Best practice: remove this so it doesn't hardcode anything
-    // Connection string should come from Program.cs via DI
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ReturnableContainers>(entity =>

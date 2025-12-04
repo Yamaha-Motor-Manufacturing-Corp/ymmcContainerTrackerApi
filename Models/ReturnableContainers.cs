@@ -5,9 +5,9 @@ namespace YmmcContainerTrackerApi.Models;
 
 public partial class ReturnableContainers
 {
-    public string ItemNo { get; set; } = null!;
+    public string ItemNo { get; set; } = null!; //Container ID
 
-    public string? PackingCode { get; set; }
+    public string? PackingCode { get; set; } //PYMAC CODE
 
     public string? PrefixCode { get; set; }
 

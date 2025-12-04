@@ -1,15 +1,32 @@
-@page
+﻿@page
+@using System
+@using System.Linq
 @model YmmcContainerTrackerApi.Pages_ReturnableContainers.IndexModel
 
 @{
     ViewData["Title"] = "Returnable Containers";
 
-    // Read search from query string
+    // Search (q)
     var q = (Request.Query["q"].ToString() ?? "").Trim();
 
-    // Filter list in-memory (no code-behind change needed)
+    // Page size (pageSize)
+    int pageSize;
+    if (!int.TryParse(Request.Query["pageSize"], out pageSize))
+        pageSize = 25;
+
+    var allowedSizes = new[] { 25, 50, 100 };
+    if (!allowedSizes.Contains(pageSize))
+        pageSize = 25;
+
+    // Page number (p)  <-- IMPORTANT: don't call this 'page'
+    int p;
+    if (!int.TryParse(Request.Query["p"], out p))
+        p = 1;
+    if (p < 1) p = 1;
+
+    // Filter
     var filtered = string.IsNullOrWhiteSpace(q)
-        ? Model.ReturnableContainers
+        ? Model.ReturnableContainers.ToList()
         : Model.ReturnableContainers.Where(x =>
             (x.ItemNo ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
             (x.PackingCode ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
@@ -17,6 +34,24 @@
             (x.ContainerNumber ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
             (x.AlternateId ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
         ).ToList();
+
+    // Pagination
+    var totalCount = filtered.Count;
+    var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+    if (totalPages < 1) totalPages = 1;
+    if (p > totalPages) p = totalPages;
+
+    var paged = filtered
+        .Skip((p - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+
+    // Small pager window
+    var start = Math.Max(1, p - 2);
+    var end = Math.Min(totalPages, p + 2);
+
+    var fromRow = totalCount == 0 ? 0 : ((p - 1) * pageSize + 1);
+    var toRow = Math.Min(p * pageSize, totalCount);
 }
 
 <div class="d-flex justify-content-between align-items-center mt-4">
@@ -25,36 +60,56 @@
         <div class="text-muted">View / add / edit / delete container records</div>
     </div>
 
-    <a asp-page="Create" class="btn btn-primary">
-        + Create New
-    </a>
+    <a asp-page="Create" class="btn btn-primary">+ Create New</a>
 </div>
 
 <hr class="my-4" />
 
-<!-- Search bar -->
-<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
-    <form method="get" class="d-flex gap-2 align-items-center flex-grow-1">
-        <input name="q"
-               value="@q"
-               class="form-control"
-               placeholder="Search Item No, Packing Code, Prefix Code, Container Number, Alternate ID..."
-               autocomplete="off" />
+<!-- Search + Page Size -->
+<div class="d-flex flex-wrap gap-2 align-items-end mb-3">
+    <form method="get" class="d-flex flex-wrap gap-2 align-items-end flex-grow-1">
+        <div style="min-width: 320px;">
+            <label class="form-label mb-1">Search</label>
+            <input name="q"
+                   value="@q"
+                   class="form-control"
+                   placeholder="Search Item No, Packing Code, Prefix Code, Container Number, Alternate ID..."
+                   autocomplete="off" />
+        </div>
 
-        <button type="submit" class="btn btn-outline-primary">Search</button>
+        <div style="width: 170px;">
+            <label class="form-label mb-1">Rows per page</label>
+            <select name="pageSize" class="form-select" onchange="this.form.submit()">
+                <option value="25" selected="@(pageSize == 25)">25</option>
+                <option value="50" selected="@(pageSize == 50)">50</option>
+                <option value="100" selected="@(pageSize == 100)">100</option>
+            </select>
+        </div>
 
-        @if (!string.IsNullOrWhiteSpace(q))
-        {
-            <a asp-page="./Index" class="btn btn-outline-secondary">Clear</a>
-        }
+        <!-- Reset to first page when searching/changing pageSize -->
+        <input type="hidden" name="p" value="1" />
+
+        <div class="pb-1">
+            <button type="submit" class="btn btn-outline-primary">Apply</button>
+
+            @if (!string.IsNullOrWhiteSpace(q))
+            {
+                <a asp-page="./Index"
+                   asp-route-pageSize="@pageSize"
+                   class="btn btn-outline-secondary">
+                    Clear
+                </a>
+            }
+        </div>
     </form>
 
-    <div class="text-muted small">
-        Showing <strong>@filtered.Count</strong> of <strong>@Model.ReturnableContainers.Count</strong>
+    <div class="text-muted small ms-auto">
+        Showing <strong>@(paged.Count)</strong> of <strong>@totalCount</strong> (filtered)
+        &nbsp;|&nbsp; Page <strong>@p</strong> of <strong>@totalPages</strong>
     </div>
 </div>
 
-<!-- Scroll container so horizontal scroll is available immediately -->
+<!-- Scroll container (keeps horizontal scroll immediately) -->
 <div class="table-shell">
     <div class="table-responsive rc-table">
         <table class="table table-bordered table-striped table-hover align-middle mb-0">
@@ -76,7 +131,7 @@
             </thead>
 
             <tbody>
-                @if (filtered.Count == 0)
+                @if (paged.Count == 0)
                 {
                     <tr>
                         <td colspan="12" class="text-center py-4 text-muted">
@@ -86,7 +141,7 @@
                 }
                 else
                 {
-                    @foreach (var item in filtered)
+                    @foreach (var item in paged)
                     {
                         <tr>
                             <td class="fw-semibold text-nowrap">@item.ItemNo</td>
@@ -116,6 +171,72 @@
     </div>
 </div>
 
+<!-- Pagination Controls -->
+<nav class="d-flex justify-content-between align-items-center mt-3">
+    <div class="text-muted small">
+        Showing <strong>@fromRow</strong> - <strong>@toRow</strong> of <strong>@totalCount</strong>
+    </div>
+
+    <ul class="pagination mb-0">
+        <li class="page-item @(p > 1 ? "" : "disabled")">
+            <a class="page-link"
+               asp-page="./Index"
+               asp-route-q="@q"
+               asp-route-pageSize="@pageSize"
+               asp-route-p="@(p - 1)">Prev</a>
+        </li>
+
+        @if (start > 1)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-q="@q"
+                   asp-route-pageSize="@pageSize"
+                   asp-route-p="1">1</a>
+            </li>
+            @if (start > 2)
+            {
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+        }
+
+        @for (var i = start; i <= end; i++)
+        {
+            <li class="page-item @(i == p ? "active" : "")">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-q="@q"
+                   asp-route-pageSize="@pageSize"
+                   asp-route-p="@i">@i</a>
+            </li>
+        }
+
+        @if (end < totalPages)
+        {
+            @if (end < totalPages - 1)
+            {
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+            <li class="page-item">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-q="@q"
+                   asp-route-pageSize="@pageSize"
+                   asp-route-p="@totalPages">@totalPages</a>
+            </li>
+        }
+
+        <li class="page-item @(p < totalPages ? "" : "disabled")">
+            <a class="page-link"
+               asp-page="./Index"
+               asp-route-q="@q"
+               asp-route-pageSize="@pageSize"
+               asp-route-p="@(p + 1)">Next</a>
+        </li>
+    </ul>
+</nav>
+
 <style>
     .table-shell {
         border: 1px solid rgba(0,0,0,.125);
@@ -125,8 +246,8 @@
     }
 
     .rc-table {
-        max-height: calc(100vh - 320px); /* a little more space because of search bar */
-        overflow: auto;
+        max-height: calc(100vh - 390px);
+        overflow: auto; /* x + y scroll */
     }
 
         .rc-table thead th {
