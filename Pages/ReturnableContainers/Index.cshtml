@@ -115,6 +115,7 @@
         <table class="table table-bordered table-striped table-hover align-middle mb-0">
             <thead class="table-dark">
                 <tr>
+                    <th class="text-end text-nowrap">Actions</th>
                     <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].ItemNo)</th>
                     <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].PackingCode)</th>
                     <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].PrefixCode)</th>
@@ -126,12 +127,11 @@
                     <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].Weight)</th>
                     <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].PackQuantity)</th>
                     <th class="text-nowrap">@Html.DisplayNameFor(model => model.ReturnableContainers[0].AlternateId)</th>
-                    <th class="text-end text-nowrap">Actions</th>
                 </tr>
             </thead>
 
             <tbody>
-                @if (paged.Count == 0)
+                @if (paged.Count ==0)
                 {
                     <tr>
                         <td colspan="12" class="text-center py-4 text-muted">
@@ -143,33 +143,7 @@
                 {
                     @foreach (var item in paged)
                     {
-                        <tr>
-                            <td class="fw-semibold text-nowrap">@item.ItemNo</td>
-                            <td>@item.PackingCode</td>
-                            <td>@item.PrefixCode</td>
-                            <td class="text-nowrap">@item.ContainerNumber</td>
-
-                            <td class="text-end">@item.OutsideLength</td>
-                            <td class="text-end">@item.OutsideWidth</td>
-                            <td class="text-end">@item.OutsideHeight</td>
-                            <td class="text-end">@item.CollapsedHeight</td>
-                            <td class="text-end">@item.Weight</td>
-                            <td class="text-end">@item.PackQuantity</td>
-
-                            <td class="text-nowrap">@item.AlternateId</td>
-
-                            <td class="text-end text-nowrap">
-                                <a asp-page="./Edit" asp-route-id="@item.ItemNo" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a asp-page="./Details" asp-route-id="@item.ItemNo" class="btn btn-sm btn-outline-secondary">Details</a>
-                                <a asp-page="./Delete"
-                                   asp-route-id="@item.ItemNo"
-                                   class="btn btn-sm btn-outline-danger"
-                                   onclick="return confirm('Are you sure you want to delete Item No: @item.ItemNo ?');">
-                                    Delete
-                                </a>
-
-                            </td>
-                        </tr>
+                        @await Html.PartialAsync("_Row", new YmmcContainerTrackerApi.Models.ReturnableContainersRowModel { Item = item, IsEditing = false })
                     }
                 }
             </tbody>
@@ -242,6 +216,10 @@
         </li>
     </ul>
 </nav>
+
+@section Scripts {
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+}
 
 <style>
     .table-shell {

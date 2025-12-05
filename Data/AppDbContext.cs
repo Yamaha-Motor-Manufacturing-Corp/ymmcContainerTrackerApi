@@ -23,23 +23,27 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<ReturnableContainers>(entity =>
         {
             entity.HasKey(e => e.ItemNo);
+            entity.HasIndex(e => e.ItemNo).IsUnique(); // enforce uniqueness at DB level
 
             entity.ToTable("ReturnableContainers", "dbo");
 
             entity.Property(e => e.ItemNo)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("Item_No");
+                .HasColumnName("Item_No")
+                .IsRequired();
 
             entity.Property(e => e.PackingCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("Packing_Code");
+                .HasColumnName("Packing_Code")
+                .IsRequired(false);
 
             entity.Property(e => e.PrefixCode)
                 .HasMaxLength(50)
                 .IsUnicode(false)
-                .HasColumnName("Prefix_Code");
+                .HasColumnName("Prefix_Code")
+                .IsRequired(false);
 
             entity.Property(e => e.ContainerNumber)
                 .HasMaxLength(100)

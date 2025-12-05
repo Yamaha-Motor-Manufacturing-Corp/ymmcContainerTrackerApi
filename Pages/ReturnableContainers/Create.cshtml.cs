@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,9 +33,19 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
         public async Task<IActionResult> OnPostAsync()
         {
             // Normalize key fields before validation
-            ReturnableContainers.ItemNo = ReturnableContainers.ItemNo?.Trim() ?? string.Empty;
-            ReturnableContainers.PackingCode = ReturnableContainers.PackingCode?.Trim() ?? string.Empty;
-            ReturnableContainers.PrefixCode = ReturnableContainers.PrefixCode?.Trim() ?? string.Empty;
+            string Normalize(string? s)
+            {
+                var trimmed = (s ?? string.Empty).Trim();
+                if (trimmed.Length ==0) return string.Empty;
+                // collapse internal whitespace to single space
+                trimmed = Regex.Replace(trimmed, "\\s+", " ");
+                // uppercase for consistency
+                return trimmed.ToUpperInvariant();
+            }
+
+            ReturnableContainers.ItemNo = Normalize(ReturnableContainers.ItemNo);
+            ReturnableContainers.PackingCode = Normalize(ReturnableContainers.PackingCode);
+            ReturnableContainers.PrefixCode = Normalize(ReturnableContainers.PrefixCode);
 
             if (string.IsNullOrWhiteSpace(ReturnableContainers.ItemNo))
                 ModelState.AddModelError("ReturnableContainers.ItemNo", "Please add the column [Item_No].");
@@ -48,7 +59,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                 return Page();
             }
 
-            // Check for duplicates (by ItemNo)
+            // Check for duplicates (by normalized ItemNo)
             var exists = await _context.ReturnableContainers
                 .AsNoTracking()
                 .AnyAsync(rc => rc.ItemNo == ReturnableContainers.ItemNo);
@@ -59,6 +70,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                 return Page();
             }
 
+            // Persist new entity
             _context.ReturnableContainers.Add(ReturnableContainers);
             await _context.SaveChangesAsync();
 
