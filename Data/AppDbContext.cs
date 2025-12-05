@@ -14,7 +14,7 @@ public partial class AppDbContext : DbContext
     {
     }
 
-    // ✅ Only the tables you care about
+    //  Only the tables you care about
     public virtual DbSet<ReturnableContainers> ReturnableContainers { get; set; }
     public virtual DbSet<ReturnableContainersStage> ReturnableContainersStage { get; set; }
 
