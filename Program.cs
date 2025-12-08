@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using YmmcContainerTrackerApi.Data;
+using YmmcContainerTrackerApi.Services; // ADD THIS LINE
 
 namespace YmmcContainerTrackerApi
 {
@@ -11,6 +12,14 @@ namespace YmmcContainerTrackerApi
 
             // Controllers (API)
             builder.Services.AddControllers();
+
+            // LDAP Infrastructure (ready for activation)
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IUserService, UserService>(); // ADD THIS LINE
+
+            // TODO: Uncomment when ready to enable Windows Authentication
+            // builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            // builder.Services.AddAuthorization();
 
             // Razor Pages (UI)
             var razor = builder.Services.AddRazorPages();

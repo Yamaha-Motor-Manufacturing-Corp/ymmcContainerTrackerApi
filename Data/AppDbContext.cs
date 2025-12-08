@@ -14,9 +14,10 @@ public partial class AppDbContext : DbContext
     {
     }
 
-    //  Only the tables you care about
+    // Only the tables you care about
     public virtual DbSet<ReturnableContainers> ReturnableContainers { get; set; }
     public virtual DbSet<ReturnableContainersStage> ReturnableContainersStage { get; set; }
+    public virtual DbSet<UserRole> UserRoles { get; set; } // ADD THIS LINE
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -138,6 +139,29 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("Alternate_ID");
+        });
+
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(e => e.Username);
+            entity.ToTable("UserRoles", "dbo");
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.Role)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(e => e.DisplayName)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Email)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("GETUTCDATE()");
         });
 
         OnModelCreatingPartial(modelBuilder);
