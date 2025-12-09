@@ -6,7 +6,7 @@ public class UserRole
 {
     [Key]
     [StringLength(50)]
-    public string Username { get; set; } = string.Empty; // Fixed: was "UserName", should be "Username"
+    public string Username { get; set; } = string.Empty; // (without domain)
 
     [StringLength(20)]
     public string Role { get; set; } = string.Empty; // "Editor", "Viewer", "Admin"
@@ -16,8 +16,8 @@ public class UserRole
     public DateTime? LastModified { get; set; }
 
     [StringLength(100)]
-    public string? DisplayName { get; set; }
+    public string? DisplayName { get; set; } //firstname lastname
 
     [StringLength(100)]
-    public string? Email { get; set; }
+    public string? Email { get; set; }  //email@company.com
 }
