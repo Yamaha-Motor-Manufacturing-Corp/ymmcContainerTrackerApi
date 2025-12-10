@@ -111,14 +111,11 @@
         .Take(pageSize)             // Take only the current page's records
         .ToList();
 
-    // ========================================
-    // PAGINATION UI WINDOW CALCULATION
-    // ========================================
-    // Calculate the range of page numbers to display in pagination controls
-    // Shows current page ± 2 pages (e.g., if on page 5, show: 3 4 [5] 6 7)
-    // This prevents showing hundreds of page links for large datasets
-    var start = Math.Max(1, p - 2);           // Don't go below page 1
-    var end = Math.Min(totalPages, p + 2);    // Don't go beyond last page
+    
+    // PAGINATION 
+    
+    var start = Math.Max(1, p - 2);
+    var end = Math.Min(totalPages, p + 2);    
 
     // Calculate row numbers for "Showing X - Y of Z" display
     var fromRow = totalCount == 0 ? 0 : ((p - 1) * pageSize + 1);  // First row on current page
