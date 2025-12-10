@@ -17,16 +17,16 @@ public partial class AppDbContext : DbContext
     // Only the tables you care about
     public virtual DbSet<ReturnableContainers> ReturnableContainers { get; set; }
     public virtual DbSet<ReturnableContainersStage> ReturnableContainersStage { get; set; }
-    public virtual DbSet<UserRole> UserRoles { get; set; } // ADD THIS LINE
+    public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ReturnableContainers>(entity =>
         {
             entity.HasKey(e => e.ItemNo);
-            entity.HasIndex(e => e.ItemNo).IsUnique(); // enforce uniqueness at DB level
+            entity.HasIndex(e => e.ItemNo).IsUnique();
 
-            entity.ToTable("ReturnableContainers", "dbo");
+            entity.ToTable("RtrnCotnr_Main", "RtrnCotnr");
 
             entity.Property(e => e.ItemNo)
                 .HasMaxLength(50)
@@ -83,7 +83,7 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<ReturnableContainersStage>(entity =>
         {
             entity.HasNoKey();
-            entity.ToTable("ReturnableContainers_Stage", "dbo");
+            entity.ToTable("RtrnCotnr_Stage", "RtrnCotnr");
 
             entity.Property(e => e.ItemNo)
                 .HasMaxLength(255)
@@ -144,6 +144,7 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<UserRole>(entity =>
         {
             entity.HasKey(e => e.Username);
+            
             entity.ToTable("UserRoles", "dbo");
 
             entity.Property(e => e.Username)

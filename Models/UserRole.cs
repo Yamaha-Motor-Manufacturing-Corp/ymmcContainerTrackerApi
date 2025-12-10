@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace YmmcContainerTrackerApi.Models; // Changed from .Services to .Models
+namespace YmmcContainerTrackerApi.Models;
 
 public class UserRole
 {

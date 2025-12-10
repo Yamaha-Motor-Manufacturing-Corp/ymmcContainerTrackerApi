@@ -8,10 +8,12 @@ public partial class ReturnableContainers
     [StringLength(50)]
     public string ItemNo { get; set; } = string.Empty; // PK must be non-null
 
-    // Make strings nullable to tolerate existing NULLs in DB rows
+
+    
     [StringLength(50)]
     public string? PackingCode { get; set; }
 
+  
     [StringLength(50)]
     public string? PrefixCode { get; set; }
 
