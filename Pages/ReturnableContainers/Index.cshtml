@@ -18,21 +18,31 @@
     if (!allowedSizes.Contains(pageSize))
         pageSize = 25;
 
-    // Page number (p)  <-- IMPORTANT: don't call this 'page'
+    // Page number (p)
     int p;
     if (!int.TryParse(Request.Query["p"], out p))
         p = 1;
     if (p < 1) p = 1;
 
-    // Filter
-    var filtered = string.IsNullOrWhiteSpace(q)
+    // Parse search terms - split on | and trim each part
+    var searchTerms = string.IsNullOrWhiteSpace(q) 
+        ? new List<string>() 
+        : q.Split(new[] { '|', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+           .Select(t => t.Trim())
+           .Where(t => !string.IsNullOrWhiteSpace(t))
+           .ToList();
+
+    // Filter - if ANY search term matches ANY field
+    var filtered = searchTerms.Count == 0
         ? Model.ReturnableContainers.ToList()
         : Model.ReturnableContainers.Where(x =>
-            (x.ItemNo ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
-            (x.PackingCode ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
-            (x.PrefixCode ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
-            (x.ContainerNumber ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
-            (x.AlternateId ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+            searchTerms.Any(term =>
+                (x.ItemNo ?? "").Trim().Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                (x.PackingCode ?? "").Trim().Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                (x.PrefixCode ?? "").Trim().Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                (x.ContainerNumber ?? "").Trim().Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                (x.AlternateId ?? "").Trim().Contains(term, StringComparison.OrdinalIgnoreCase)
+            )
         ).ToList();
 
     // Pagination
