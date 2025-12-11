@@ -26,6 +26,15 @@
                             Your Windows account <strong>@Model.CurrentUser</strong> 
                             (<code>@Model.UserIdentity</code>) is not authorized.
                         </p>
+                        
+                        <!-- ✅ SHOW SPECIFIC REASON -->
+                        @if (!string.IsNullOrEmpty(Model.DenialReason))
+                        {
+                            <div class="alert alert-warning">
+                                <strong>Reason:</strong> @Model.DenialReason
+                            </div>
+                        }
+                        
                         <hr>
                         <div class="text-start">
                             <h5>To request access:</h5>
@@ -33,6 +42,10 @@
                                 <li>Contact your system administrator</li>
                                 <li>Provide your username: <code>@Model.CurrentUser</code></li>
                                 <li>Request access to YMMC Container Tracker</li>
+                                @if (!Model.HasAdAccess)
+                                {
+                                    <li>You may need to be added to the required Active Directory security group</li>
+                                }
                             </ol>
                         </div>
                     </div>

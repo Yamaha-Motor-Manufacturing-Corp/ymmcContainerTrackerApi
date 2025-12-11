@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using YmmcContainerTrackerApi.Services;
 
@@ -7,11 +7,13 @@ namespace YmmcContainerTrackerApi.Pages
     public class IndexModel : PageModel
     {
         private readonly IUserService _userService;
+        private readonly ILdapService _ldapService; // ✅ ADD THIS
         private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(IUserService userService, ILogger<IndexModel> logger)
+        public IndexModel(IUserService userService, ILdapService ldapService, ILogger<IndexModel> logger)
         {
             _userService = userService;
+            _ldapService = ldapService; // ✅ ADD THIS
             _logger = logger;
         }
 
@@ -20,6 +22,8 @@ namespace YmmcContainerTrackerApi.Pages
         public string UserIdentity { get; set; } = string.Empty;
         public string UserRole { get; set; } = string.Empty;
         public bool HasAccess { get; set; }
+        public bool HasAdAccess { get; set; } // ✅ ADD THIS
+        public string DenialReason { get; set; } = string.Empty; // ✅ ADD THIS
 
         // Permissions
         public bool CanViewContainers { get; set; }
@@ -29,33 +33,44 @@ namespace YmmcContainerTrackerApi.Pages
 
         public async Task OnGetAsync()
         {
-            // Automatically get Windows authenticated user (no login needed)
+            // Get Windows authenticated user
             UserIdentity = _userService.GetCurrentUserIdentity();
             CurrentUser = _userService.GetCurrentUsername();
 
-            _logger.LogInformation("User attempted access: {UserIdentity}", UserIdentity);
+            _logger.LogInformation("🔍 User attempted access: {UserIdentity}", UserIdentity);
 
-            // Check if user exists in UserRoles table
+            // ✅ STEP 1: Check AD group membership (if configured)
+            HasAdAccess = _ldapService.ValidateUserAccess(CurrentUser);
+
+            if (!HasAdAccess)
+            {
+                DenialReason = "You are not a member of the required Active Directory security group.";
+                _logger.LogWarning("❌ AD access DENIED for {CurrentUser} - not in required AD group", CurrentUser);
+                HasAccess = false;
+                return;
+            }
+
+            _logger.LogInformation("✅ AD access granted for {CurrentUser}", CurrentUser);
+
+            // ✅ STEP 2: Check UserRoles database
             UserRole = await _userService.GetUserRoleAsync(CurrentUser);
             HasAccess = UserRole != "None";
 
-            if (HasAccess)
+            if (!HasAccess)
             {
-                // User has access - set their permissions
-                CanViewContainers = await _userService.CanViewAsync(CurrentUser);
-                CanEditContainers = await _userService.CanEditAsync(CurrentUser);
-                CanAccessMaintenance = UserRole is "Admin" or "Editor";
-                CanAccessReports = true;
+                DenialReason = "You are not registered in the application's user database.";
+                _logger.LogWarning("❌ Database access DENIED for {CurrentUser} - not in UserRoles table", CurrentUser);
+                return;
+            }
 
-                _logger.LogInformation("Access GRANTED to {CurrentUser} with role: {UserRole}", 
-                    CurrentUser, UserRole);
-            }
-            else
-            {
-                // User does NOT have access
-                _logger.LogWarning("Access DENIED to {CurrentUser} - not found in UserRoles table", 
-                    CurrentUser);
-            }
+            // ✅ User has both AD access AND database role
+            CanViewContainers = await _userService.CanViewAsync(CurrentUser);
+            CanEditContainers = await _userService.CanEditAsync(CurrentUser);
+            CanAccessMaintenance = UserRole is "Admin" or "Editor";
+            CanAccessReports = true;
+
+            _logger.LogInformation("✅ Full access GRANTED to {CurrentUser} with role: {UserRole}", 
+                CurrentUser, UserRole);
         }
     }
 }

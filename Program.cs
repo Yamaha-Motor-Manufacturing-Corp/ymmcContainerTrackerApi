@@ -16,7 +16,8 @@ namespace YmmcContainerTrackerApi
 
             // LDAP Infrastructure
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddScoped<IUserService, UserService>(); // ✅ Fixed (was IUserService, IUserService)
+            builder.Services.AddScoped<ILdapService, LdapService>(); // ✅ ADD THIS
+            builder.Services.AddScoped<IUserService, UserService>();
 
             // ✅ Windows Authentication
             builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme); // ✅ Fixed typo (was IISDefault)
