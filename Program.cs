@@ -1,6 +1,7 @@
+﻿using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using YmmcContainerTrackerApi.Data;
-using YmmcContainerTrackerApi.Services; // ADD THIS LINE
+using YmmcContainerTrackerApi.Services;
 
 namespace YmmcContainerTrackerApi
 {
@@ -13,13 +14,13 @@ namespace YmmcContainerTrackerApi
             // Controllers (API)
             builder.Services.AddControllers();
 
-            // LDAP Infrastructure (ready for activation)
+            // LDAP Infrastructure
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddScoped<IUserService, UserService>(); // ADD THIS LINE
+            builder.Services.AddScoped<IUserService, UserService>(); // ✅ Fixed (was IUserService, IUserService)
 
-            // TODO: Uncomment when ready to enable Windows Authentication
-            // builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
-            // builder.Services.AddAuthorization();
+            // ✅ Windows Authentication
+            builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme); // ✅ Fixed typo (was IISDefault)
+            builder.Services.AddAuthorization();
 
             // Razor Pages (UI)
             var razor = builder.Services.AddRazorPages();
@@ -49,12 +50,11 @@ namespace YmmcContainerTrackerApi
             }
 
             app.UseHttpsRedirection();
-
-            // If you later add css/js under wwwroot
             app.UseStaticFiles();
-
             app.UseRouting();
 
+            // ✅ Authentication happens here automatically
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

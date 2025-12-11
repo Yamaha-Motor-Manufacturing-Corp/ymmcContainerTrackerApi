@@ -1,10 +1,227 @@
 ﻿@page
+@model YmmcContainerTrackerApi.Pages.IndexModel
 @{
-    Layout = "_Layout";
+    ViewData["Title"] = "YMMC Container Tracker";
 }
 
-<h1>YMMC Container Tracker</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            
+            @if (!Model.HasAccess)
+            {
+                <!-- ❌ ACCESS DENIED PAGE -->
+                <div class="card border-danger shadow-lg">
+                    <div class="card-header bg-danger text-white text-center">
+                        <h2 class="mb-0">
+                            <i class="bi bi-shield-x"></i> Access Denied
+                        </h2>
+                    </div>
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 5rem;"></i>
+                        </div>
+                        <h4 class="mb-3">You do not have permission to access this application</h4>
+                        <p class="lead mb-4">
+                            Your Windows account <strong>@Model.CurrentUser</strong> 
+                            (<code>@Model.UserIdentity</code>) is not authorized.
+                        </p>
+                        <hr>
+                        <div class="text-start">
+                            <h5>To request access:</h5>
+                            <ol>
+                                <li>Contact your system administrator</li>
+                                <li>Provide your username: <code>@Model.CurrentUser</code></li>
+                                <li>Request access to YMMC Container Tracker</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted text-center">
+                        <small>YMMC Container Tracker - Security Notice</small>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- ✅ ACCESS GRANTED - DASHBOARD -->
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-box-seam"></i> YMMC Container Tracker
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Welcome Message -->
+                        <div class="alert alert-success">
+                            <h5 class="mb-0">
+                                <i class="bi bi-person-check-fill"></i> 
+                                Welcome, <strong>@Model.CurrentUser</strong>
+                                <span class="badge bg-primary ms-2">@Model.UserRole</span>
+                            </h5>
+                        </div>
 
-<p>
-    <a href="/ReturnableContainers">Go to Returnable Containers</a>
-</p>
+                        <!-- Navigation Cards -->
+                        <div class="row g-4 mt-2">
+                            
+                            <!-- View Containers -->
+                            <div class="col-md-6">
+                                <div class="card h-100 @(!Model.CanViewContainers ? "opacity-50" : "")">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-box-seam display-4 text-primary"></i>
+                                        <h5 class="card-title mt-3">View Containers</h5>
+                                        <p class="card-text text-muted">Browse and search returnable containers</p>
+                                        @if (Model.CanViewContainers)
+                                        {
+                                            <a href="/ReturnableContainers/Index" class="btn btn-primary">
+                                                <i class="bi bi-eye"></i> Open
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary" disabled>
+                                                <i class="bi bi-lock"></i> No Access
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Maintenance -->
+                            <div class="col-md-6">
+                                <div class="card h-100 @(!Model.CanAccessMaintenance ? "opacity-50" : "")">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-gear-fill display-4 text-warning"></i>
+                                        <h5 class="card-title mt-3">Maintenance</h5>
+                                        <p class="card-text text-muted">Edit and manage container data</p>
+                                        @if (Model.CanAccessMaintenance)
+                                        {
+                                            <a href="/ReturnableContainers/Index?mode=edit" class="btn btn-warning">
+                                                <i class="bi bi-pencil"></i> Manage
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary" disabled>
+                                                <i class="bi bi-lock"></i> No Access
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reports -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-file-earmark-bar-graph display-4 text-info"></i>
+                                        <h5 class="card-title mt-3">Reports</h5>
+                                        <p class="card-text text-muted">View analytics and reports</p>
+                                        <a href="/Reports/Index" class="btn btn-info text-white">
+                                            <i class="bi bi-graph-up"></i> View Reports
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Documentation -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-code-slash display-4 text-success"></i>
+                                        <h5 class="card-title mt-3">API Documentation</h5>
+                                        <p class="card-text text-muted">View Swagger API docs</p>
+                                        <a href="/swagger" class="btn btn-success" target="_blank">
+                                            <i class="bi bi-box-arrow-up-right"></i> Open Swagger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Permissions Summary -->
+                        <div class="card mt-4 bg-light">
+                            <div class="card-body">
+                                <h6 class="mb-3"><i class="bi bi-shield-check"></i> Your Permissions</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2">
+                                                @if (Model.CanViewContainers)
+                                                {
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                                }
+                                                View Containers
+                                            </li>
+                                            <li class="mb-2">
+                                                @if (Model.CanEditContainers)
+                                                {
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                                }
+                                                Edit Containers
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2">
+                                                @if (Model.CanAccessMaintenance)
+                                                {
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                                }
+                                                Access Maintenance
+                                            </li>
+                                            <li class="mb-2">
+                                                @if (Model.CanAccessReports)
+                                                {
+                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                                }
+                                                View Reports
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer text-muted text-center">
+                        <small>Logged in as: <code>@Model.UserIdentity</code></small>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .opacity-50 {
+            opacity: 0.5;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover:not(.opacity-50) {
+            transform: translateY(-3px);
+        }
+    </style>
+}
