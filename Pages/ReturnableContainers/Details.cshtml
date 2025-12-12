@@ -81,7 +81,7 @@
     </dl>
 </div>
 <div>
-    @* ✅ ONLY SHOW EDIT LINK IF USER CAN EDIT *@
+    @* ONLY SHOW EDIT LINK IF USER CAN EDIT *@
     @if (Model.CanEdit)
     {
         <a asp-page="./Edit" asp-route-id="@Model.ReturnableContainers.ItemNo" class="btn btn-primary">Edit</a>

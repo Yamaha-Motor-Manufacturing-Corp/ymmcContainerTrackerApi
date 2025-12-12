@@ -5,7 +5,7 @@
     var item = Model.Item;
     var editing = Model.IsEditing;
     
-    // ✅ CHECK PERMISSIONS
+    //CHECK PERMISSIONS
     var currentUser = UserService.GetCurrentUsername();
     var canEdit = await UserService.CanEditAsync(currentUser);
     var role = await UserService.GetUserRoleAsync(currentUser);
@@ -22,7 +22,7 @@
         <td class="text-end text-nowrap">
             @if (canEdit)
             {
-                <!-- ✅ SHOW EDIT BUTTON FOR EDITORS AND ADMINS -->
+                <!-- SHOW EDIT BUTTON FOR EDITORS AND ADMINS -->
                 <button class="btn btn-sm btn-outline-primary"
                         hx-get="@Url.Page("./Index", "EditRow", new { id = item.ItemNo })"
                         hx-target="#@rowId"
@@ -33,7 +33,7 @@
             
             @if (canDelete)
             {
-                <!-- ✅ ONLY SHOW DELETE BUTTON FOR ADMINS -->
+                <!--  ONLY SHOW DELETE BUTTON FOR ADMINS -->
                 <a asp-page="./Delete"
                    asp-route-id="@item.ItemNo"
                    class="btn btn-sm btn-outline-danger"
@@ -42,7 +42,7 @@
             
             @if (!canEdit && !canDelete)
             {
-                <!-- ✅ VIEWERS SEE READ-ONLY INDICATOR -->
+                <!--  VIEWERS SEE READ-ONLY INDICATOR -->
                 <span class="badge bg-secondary">View Only</span>
             }
         </td>

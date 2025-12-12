@@ -4,19 +4,17 @@ namespace YmmcContainerTrackerApi.Services;
 
 public interface ILdapService
 {
-    /// <summary>
+
     /// Checks if user is a member of a specific AD group
-    /// </summary>
     bool IsUserInGroup(string username, string groupName);
     
-    /// <summary>
+
     /// Gets user information from Active Directory
-    /// </summary>
+
     ActiveDirectoryUserInfo? GetUserInfo(string username);
     
-    /// <summary>
+
     /// Validates if user has access to the application via AD group
-    /// </summary>
     bool ValidateUserAccess(string username);
 }
 
@@ -31,9 +29,8 @@ public class LdapService : ILdapService
         _logger = logger;
     }
 
-    /// <summary>
+
     /// Checks if user is a member of specific AD group
-    /// </summary>
     public bool IsUserInGroup(string username, string groupName)
     {
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(groupName))
@@ -83,9 +80,8 @@ public class LdapService : ILdapService
         }
     }
 
-    /// <summary>
+
     /// Gets user information from Active Directory
-    /// </summary>
     public ActiveDirectoryUserInfo? GetUserInfo(string username)
     {
         if (string.IsNullOrWhiteSpace(username))
@@ -129,9 +125,8 @@ public class LdapService : ILdapService
         }
     }
 
-    /// <summary>
+ 
     /// Validates if user has access via AD group membership
-    /// </summary>
     public bool ValidateUserAccess(string username)
     {
         // Get required AD group from configuration
@@ -149,9 +144,8 @@ public class LdapService : ILdapService
     }
 }
 
-/// <summary>
+
 /// User information from Active Directory
-/// </summary>
 public class ActiveDirectoryUserInfo
 {
     public string Username { get; set; } = string.Empty;

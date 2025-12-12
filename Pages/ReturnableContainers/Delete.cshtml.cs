@@ -17,7 +17,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
         private readonly IUserService _userService;
         private readonly ILogger<DeleteModel> _logger; 
 
-        // ✅ UPDATE CONSTRUCTOR
+        // UPDATE CONSTRUCTOR
         public DeleteModel(AppDbContext context, IUserService userService, ILogger<DeleteModel> logger)
         {
             _context = context;
@@ -30,7 +30,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            // ✅ CHECK DELETE PERMISSION (only Admin can delete)
+            //CHECK DELETE PERMISSION (only Admin can delete)
             var currentUser = _userService.GetCurrentUsername();
             var role = await _userService.GetUserRoleAsync(currentUser);
 
@@ -61,7 +61,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            // ✅ CHECK DELETE PERMISSION AGAIN (防止直接POST攻击)
+            //CHECK DELETE PERMISSION AGAIN (防止直接POST攻击)
             var currentUser = _userService.GetCurrentUsername();
             var role = await _userService.GetUserRoleAsync(currentUser);
 

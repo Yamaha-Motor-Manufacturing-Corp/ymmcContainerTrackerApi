@@ -9,17 +9,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using YmmcContainerTrackerApi.Data;
 using YmmcContainerTrackerApi.Models;
-using YmmcContainerTrackerApi.Services; // ✅ ADD THIS
+using YmmcContainerTrackerApi.Services; 
 
 namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 {
     public class CreateModel : PageModel
     {
         private readonly AppDbContext _context;
-        private readonly IUserService _userService; // ✅ ADD THIS
-        private readonly ILogger<CreateModel> _logger; // ✅ ADD THIS
+        private readonly IUserService _userService; 
+        private readonly ILogger<CreateModel> _logger; 
 
-        // ✅ UPDATE CONSTRUCTOR
+        //UPDATE CONSTRUCTOR
         public CreateModel(AppDbContext context, IUserService userService, ILogger<CreateModel> logger)
         {
             _context = context;
@@ -29,7 +29,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
         public IActionResult OnGet()
         {
-            // ✅ CHECK CREATE PERMISSION
+            //CHECK CREATE PERMISSION
             var currentUser = _userService.GetCurrentUsername();
             var canEdit = _userService.CanEditAsync(currentUser).Result;
 
@@ -48,7 +48,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // ✅ CHECK CREATE PERMISSION (prevent direct POST attacks)
+            //CHECK CREATE PERMISSION (prevent direct POST attacks)
             var currentUser = _userService.GetCurrentUsername();
             var canEdit = await _userService.CanEditAsync(currentUser);
 
