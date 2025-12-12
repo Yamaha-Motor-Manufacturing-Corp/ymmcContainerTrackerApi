@@ -16,14 +16,16 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
     public class CreateModel : PageModel
     {
         private readonly AppDbContext _context;
-        private readonly IUserService _userService; 
+        private readonly IUserService _userService;
+      private readonly IAuditService _auditService;
         private readonly ILogger<CreateModel> _logger; 
 
         //UPDATE CONSTRUCTOR
-        public CreateModel(AppDbContext context, IUserService userService, ILogger<CreateModel> logger)
+        public CreateModel(AppDbContext context, IUserService userService, IAuditService auditService, ILogger<CreateModel> logger)
         {
             _context = context;
             _userService = userService;
+            _auditService = auditService;
             _logger = logger;
         }
 
@@ -97,13 +99,33 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                 return Page();
             }
 
-            // Persist new entity
-            _context.ReturnableContainers.Add(ReturnableContainers);
-            await _context.SaveChangesAsync();
+            //  START TRANSACTION - Ensure atomic operation
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Create the container
+                _context.ReturnableContainers.Add(ReturnableContainers);
+                await _context.SaveChangesAsync();
 
-            _logger.LogInformation("✅ User {CurrentUser} created new container {ItemNo}", currentUser, ReturnableContainers.ItemNo);
+                // Log the CREATE action
+                await _auditService.LogCreateAsync(ReturnableContainers.ItemNo, ReturnableContainers, currentUser);
 
-            return RedirectToPage("./Index");
+                //  COMMIT - Both create and audit log succeed together
+                await transaction.CommitAsync();
+
+                _logger.LogInformation("✅ User {CurrentUser} created new container {ItemNo}", currentUser, ReturnableContainers.ItemNo);
+     TempData["SuccessMessage"] = $"Container {ReturnableContainers.ItemNo} successfully created.";
+
+                return RedirectToPage("./Index");
+            }
+            catch (Exception ex)
+            {
+                //  ROLLBACK on any error - Nothing gets saved
+                await transaction.RollbackAsync();
+       _logger.LogError(ex, "❌ Failed to create container {ItemNo}", ReturnableContainers.ItemNo);
+    TempData["ErrorMessage"] = "An error occurred while creating the container. Please try again.";
+                return Page();
+  }
         }
     }
 }
