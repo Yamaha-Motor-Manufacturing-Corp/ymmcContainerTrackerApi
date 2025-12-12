@@ -18,6 +18,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<ReturnableContainers> ReturnableContainers { get; set; }
     public virtual DbSet<ReturnableContainersStage> ReturnableContainersStage { get; set; }
     public virtual DbSet<UserRole> UserRoles { get; set; }
+    public virtual DbSet<ContainerAuditLog> ContainerAuditLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -163,6 +164,48 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<ContainerAuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+  
+            entity.ToTable("ContainerAuditLogs", "dbo");
+
+            entity.Property(e => e.ItemNo)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.Action)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.UserRole)
+                .HasMaxLength(20);
+
+            entity.Property(e => e.Timestamp)
+                .IsRequired();
+
+            entity.Property(e => e.ChangedFields)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(45);
+
+            entity.Property(e => e.UserAgent)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(1000);
+
+            // Create index on commonly queried fields
+            entity.HasIndex(e => e.ItemNo);
+            entity.HasIndex(e => e.Username);
+            entity.HasIndex(e => e.Timestamp);
         });
 
         OnModelCreatingPartial(modelBuilder);

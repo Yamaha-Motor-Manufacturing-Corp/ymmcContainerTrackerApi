@@ -1,0 +1,281 @@
+@page
+@model YmmcContainerTrackerApi.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "Audit Reports";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="bi bi-file-earmark-bar-graph"></i> Audit Reports & Activity Log
+            </h1>
+            <p class="text-muted mb-0">Track all container changes and user actions</p>
+        </div>
+        <a asp-page="/Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel"></i> Filters
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Item No</label>
+                    <input type="text"
+                           name="FilterItemNo"
+                           value="@Model.FilterItemNo"
+                           class="form-control"
+                           placeholder="e.g., YPB-4424-25" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Username</label>
+                    <input type="text"
+                           name="FilterUsername"
+                           value="@Model.FilterUsername"
+                           class="form-control"
+                           placeholder="e.g., kmurtaza" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Action</label>
+                    <select name="FilterAction" class="form-select">
+                        <option value="">All Actions</option>
+                        <option value="CREATE" selected="@(Model.FilterAction == "CREATE")">Create</option>
+                        <option value="UPDATE" selected="@(Model.FilterAction == "UPDATE")">Update</option>
+                        <option value="DELETE" selected="@(Model.FilterAction == "DELETE")">Delete</option>
+                        <option value="VIEW" selected="@(Model.FilterAction == "VIEW")">View</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date"
+                           name="FilterStartDate"
+                           value="@Model.FilterStartDate?.ToString("yyyy-MM-dd")"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">End Date</label>
+                    <input type="date"
+                           name="FilterEndDate"
+                           value="@Model.FilterEndDate?.ToString("yyyy-MM-dd")"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-1">
+                    <label class="form-label">Page Size</label>
+                    <select name="PageSize" class="form-select">
+                        <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                        <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                        <option value="100" selected="@(Model.PageSize == 100)">100</option>
+                        <option value="200" selected="@(Model.PageSize == 200)">200</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Apply Filters
+                    </button>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Showing <strong>@Model.AuditLogs.Count</strong> audit log entries
+    </div>
+
+    <!-- Audit Logs Table -->
+    @if (Model.AuditLogs.Count == 0)
+    {
+        <div class="alert alert-warning text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">No audit logs found</h4>
+            <p class="text-muted">Try adjusting your filters or check back later.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>Item No</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Changed Fields</th>
+                        <th>IP Address</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model.AuditLogs)
+                    {
+                        <tr>
+                            <td class="text-nowrap">
+                                @log.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                            </td>
+                            <td>
+                                @if (log.Action == "CREATE")
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-plus-circle"></i> CREATE
+                                    </span>
+                                }
+                                else if (log.Action == "UPDATE")
+                                {
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-pencil"></i> UPDATE
+                                    </span>
+                                }
+                                else if (log.Action == "DELETE")
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-trash"></i> DELETE
+                                    </span>
+                                }
+                                else if (log.Action == "VIEW")
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-eye"></i> VIEW
+                                    </span>
+                                }
+                            </td>
+                            <td class="fw-bold">
+                                <a asp-page="/ReturnableContainers/Details"
+                                   asp-route-id="@log.ItemNo"
+                                   class="text-decoration-none">
+                                    @log.ItemNo
+                                </a>
+                            </td>
+                            <td>@log.Username</td>
+                            <td>
+                                @if (log.UserRole == "Admin")
+                                {
+                                    <span class="badge bg-danger">Admin</span>
+                                }
+                                else if (log.UserRole == "Editor")
+                                {
+                                    <span class="badge bg-warning text-dark">Editor</span>
+                                }
+                                else if (log.UserRole == "Viewer")
+                                {
+                                    <span class="badge bg-info">Viewer</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@log.UserRole</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(log.ChangedFields))
+                                {
+                                    <span class="text-muted small">@log.ChangedFields</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td class="small text-muted">@(log.IpAddress ?? "-")</td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-info"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#detailsModal@(log.Id)">
+                                    <i class="bi bi-eye"></i> View
+                                </button>
+
+                                <!-- Details Modal -->
+                                <div class="modal fade" id="detailsModal@(log.Id)" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">
+                                                    Audit Log Details - @log.Action on @log.ItemNo
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <strong>Timestamp:</strong><br />
+                                                        @log.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <strong>User:</strong><br />
+                                                        @log.Username (@log.UserRole)
+                                                    </div>
+                                                </div>
+
+                                                @if (!string.IsNullOrWhiteSpace(log.OldValues))
+                                                {
+                                                    <div class="mb-3">
+                                                        <strong>Old Values:</strong>
+                                                        <pre class="bg-light p-2 rounded"><code>@log.OldValues</code></pre>
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(log.NewValues))
+                                                {
+                                                    <div class="mb-3">
+                                                        <strong>New Values:</strong>
+                                                        <pre class="bg-light p-2 rounded"><code>@log.NewValues</code></pre>
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(log.UserAgent))
+                                                {
+                                                    <div class="mb-3">
+                                                        <strong>Browser:</strong><br />
+                                                        <span class="small text-muted">@log.UserAgent</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        pre code {
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+        }
+    </style>
+}

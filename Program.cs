@@ -18,6 +18,7 @@ namespace YmmcContainerTrackerApi
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ILdapService, LdapService>(); // ✅ ADD THIS
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuditService, AuditService>();
 
             // ✅ Windows Authentication
             builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme); // ✅ Fixed typo (was IISDefault)
