@@ -20,7 +20,7 @@ namespace YmmcContainerTrackerApi
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAuditService, AuditService>();
 
-            // ✅ Windows Authentication
+            //  Windows Authentication
             builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme); 
             builder.Services.AddAuthorization();
 
