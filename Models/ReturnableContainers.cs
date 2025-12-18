@@ -6,9 +6,9 @@ public partial class ReturnableContainers
 {
     [Key]
     [Required(ErrorMessage = "Item No is required")]
-    [StringLength(20, ErrorMessage = "Item No cannot exceed 20 characters")]
-    [RegularExpression(@"^[A-Z]{3}-\d{4}-\d{2}\s*\|\s*[A-Z0-9]{1,3}$",
-        ErrorMessage = "Item No must follow format: YPT-1207-05 | 1A")]
+    [StringLength(15, ErrorMessage = "Item No cannot exceed 15 characters")]
+    [RegularExpression(@"^[A-Z]{3}-\d{4}-\d{2}$",
+        ErrorMessage = "Item No must follow format: YPT-1207-05")]
     public string ItemNo { get; set; } = string.Empty;
 
     [StringLength(15, ErrorMessage = "Packing Code cannot exceed 15 characters")]
