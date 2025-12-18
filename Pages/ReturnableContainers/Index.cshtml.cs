@@ -59,8 +59,8 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
             return Page();
         }
 
-        // GET: return edit-mode row
-        public async Task<PartialViewResult> OnGetEditRowAsync(string id)
+        // GET: return edit-mode row (or view-mode if isEditing=false)
+        public async Task<PartialViewResult> OnGetEditRowAsync(string id, bool isEditing = true)
         {
             var currentUser = _userService.GetCurrentUsername();
             var canEdit = await _userService.CanEditAsync(currentUser);
@@ -78,7 +78,7 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
             {
                 return Partial("_Row", new ReturnableContainersRowModel { Item = new ReturnableContainers { ItemNo = id }, IsEditing = false });
             }
-            return Partial("_Row", new ReturnableContainersRowModel { Item = editItem, IsEditing = true });
+            return Partial("_Row", new ReturnableContainersRowModel { Item = editItem, IsEditing = isEditing });
         }
 
         // POST: save inline edit
