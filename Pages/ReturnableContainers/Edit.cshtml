@@ -20,58 +20,90 @@
                 <input asp-for="ReturnableContainers.ItemNo" class="form-control" readonly />
             </div>
 
-            <input type="hidden" asp-for="ReturnableContainers.ItemNo" />
             <div class="form-group">
                 <label asp-for="ReturnableContainers.PackingCode" class="control-label"></label>
-                <input asp-for="ReturnableContainers.PackingCode" class="form-control" />
+                <input asp-for="ReturnableContainers.PackingCode" class="form-control" maxlength="15" />
                 <span asp-validation-for="ReturnableContainers.PackingCode" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.PrefixCode" class="control-label"></label>
-                <input asp-for="ReturnableContainers.PrefixCode" class="form-control" />
+                <input asp-for="ReturnableContainers.PrefixCode" class="form-control" maxlength="15" />
                 <span asp-validation-for="ReturnableContainers.PrefixCode" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.ContainerNumber" class="control-label"></label>
-                <input asp-for="ReturnableContainers.ContainerNumber" class="form-control" />
+                <input asp-for="ReturnableContainers.ContainerNumber" class="form-control" maxlength="15" />
                 <span asp-validation-for="ReturnableContainers.ContainerNumber" class="text-danger"></span>
             </div>
+            
+            <!-- Dimension Fields with "inches" label -->
             <div class="form-group">
                 <label asp-for="ReturnableContainers.OutsideLength" class="control-label"></label>
-                <input asp-for="ReturnableContainers.OutsideLength" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="ReturnableContainers.OutsideLength" class="form-control" 
+                           type="number" step="0.01" placeholder="0.00" />
+                    <span class="input-group-text">inches</span>
+                </div>
                 <span asp-validation-for="ReturnableContainers.OutsideLength" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.OutsideWidth" class="control-label"></label>
-                <input asp-for="ReturnableContainers.OutsideWidth" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="ReturnableContainers.OutsideWidth" class="form-control" 
+                           type="number" step="0.01" placeholder="0.00" />
+                    <span class="input-group-text">inches</span>
+                </div>
                 <span asp-validation-for="ReturnableContainers.OutsideWidth" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.OutsideHeight" class="control-label"></label>
-                <input asp-for="ReturnableContainers.OutsideHeight" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="ReturnableContainers.OutsideHeight" class="form-control" 
+                           type="number" step="0.01" placeholder="0.00" />
+                    <span class="input-group-text">inches</span>
+                </div>
                 <span asp-validation-for="ReturnableContainers.OutsideHeight" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.CollapsedHeight" class="control-label"></label>
-                <input asp-for="ReturnableContainers.CollapsedHeight" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="ReturnableContainers.CollapsedHeight" class="form-control" 
+                           type="number" step="0.01" placeholder="0.00" />
+                    <span class="input-group-text">inches</span>
+                </div>
                 <span asp-validation-for="ReturnableContainers.CollapsedHeight" class="text-danger"></span>
             </div>
+            
+            <!-- Weight field with "lbs" label -->
             <div class="form-group">
                 <label asp-for="ReturnableContainers.Weight" class="control-label"></label>
-                <input asp-for="ReturnableContainers.Weight" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="ReturnableContainers.Weight" class="form-control" 
+                           type="number" step="0.01" placeholder="0.00" />
+                    <span class="input-group-text">lbs</span>
+                </div>
                 <span asp-validation-for="ReturnableContainers.Weight" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.PackQuantity" class="control-label"></label>
-                <input asp-for="ReturnableContainers.PackQuantity" class="form-control" />
+                <input asp-for="ReturnableContainers.PackQuantity" class="form-control" type="number" min="0" />
                 <span asp-validation-for="ReturnableContainers.PackQuantity" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="ReturnableContainers.AlternateId" class="control-label"></label>
-                <input asp-for="ReturnableContainers.AlternateId" class="form-control" />
+                <input asp-for="ReturnableContainers.AlternateId" class="form-control" maxlength="15" />
+                <small class="form-text text-muted">Letters and numbers only</small>
                 <span asp-validation-for="ReturnableContainers.AlternateId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            
+            <div class="form-group mt-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -81,6 +113,7 @@
 <div>
     <a asp-page="./Index">Back to List</a>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
