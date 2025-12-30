@@ -44,52 +44,63 @@
             {
                 <!--  VIEWERS SEE READ-ONLY INDICATOR -->
                 <span class="badge bg-secondary">View Only</span>
-                    }
-                </td>
-                <td class="fw-semibold text-nowrap">@item.ItemNo</td>
-                <td>@item.PackingCode</td>
-                <td>@item.PrefixCode</td>
-                <td class="text-nowrap">@item.ContainerNumber</td>
-                <td class="text-end">@item.OutsideLength</td>
-                <td class="text-end">@item.OutsideWidth</td>
-                <td class="text-end">@item.OutsideHeight</td>
-                <td class="text-end">@item.CollapsedHeight</td>
-                <td class="text-end">@item.Weight</td>
-                <td class="text-end">@item.PackQuantity</td>
-                <td class="text-nowrap">@item.AlternateId</td>
-            </tr>
-        }
-        else
-        {
-            <tr id="@rowId">
-                <td class="text-end text-nowrap">
-                    @Html.AntiForgeryToken()
-                    <button class="btn btn-sm btn-outline-success"
-                            hx-post="@Url.Page("./Index", "SaveRow")"
-                            hx-target="#@rowId"
-                            hx-swap="outerHTML"
-                            hx-include="#@rowId input, #@rowId select, #@rowId textarea, #@rowId input[name='__RequestVerificationToken']">Save</button>
-                            <button class="btn btn-sm btn-outline-secondary"
-                            hx-get="@Url.Page("./Index", "EditRow", new { id = item.ItemNo, isEditing = false })"
-                            hx-target="#@rowId"
-                            hx-swap="outerHTML">Cancel</button>
-                        </td>
-                        <td class="fw-semibold text-nowrap">@item.ItemNo<input type="hidden" name="ItemNo" value="@item.ItemNo" /></td>
-                        <td>
-                            <input class="form-control form-control-sm" name="PackingCode" value="@item.PackingCode" />
-                        </td>
-                        <td>
-                            <input class="form-control form-control-sm" name="PrefixCode" value="@item.PrefixCode" />
-                        </td>
-                        <td>
-                            <input class="form-control form-control-sm" name="ContainerNumber" value="@item.ContainerNumber" />
-                        </td>
-                        <td><input class="form-control form-control-sm" name="OutsideLength" value="@item.OutsideLength" /></td>
-                        <td><input class="form-control form-control-sm" name="OutsideWidth" value="@item.OutsideWidth" /></td>
-                        <td><input class="form-control form-control-sm" name="OutsideHeight" value="@item.OutsideHeight" /></td>
-                        <td><input class="form-control form-control-sm" name="CollapsedHeight" value="@item.CollapsedHeight" /></td>
-                        <td><input class="form-control form-control-sm" name="Weight" value="@item.Weight" /></td>
-                        <td><input class="form-control form-control-sm" name="PackQuantity" value="@item.PackQuantity" /></td>
-                        <td><input class="form-control form-control-sm" name="AlternateId" value="@item.AlternateId" /></td>
-            </tr>
-        }
+            }
+        </td>
+        <td class="fw-semibold text-nowrap">@item.ItemNo</td>
+        <td>@item.PackingCode</td>
+        <td>@item.PrefixCode</td>
+        <td class="text-nowrap">@item.ContainerNumber</td>
+        <td class="text-end">@item.OutsideLength</td>
+        <td class="text-end">@item.OutsideWidth</td>
+        <td class="text-end">@item.OutsideHeight</td>
+        <td class="text-end">@item.CollapsedHeight</td>
+        <td class="text-end">@item.Weight</td>
+        <td class="text-end">@item.PackQuantity</td>
+        <td class="text-nowrap">@item.AlternateId</td>
+    </tr>
+}
+else
+{
+    <tr id="@rowId">
+        <td class="text-end text-nowrap">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-sm btn-outline-success"
+                    hx-post="@Url.Page("./Index", "SaveRow")"
+                    hx-target="#@rowId"
+                    hx-swap="outerHTML"
+                    hx-include="#@rowId input, #@rowId select, #@rowId textarea, #@rowId input[name='__RequestVerificationToken']">Save</button>
+            <button class="btn btn-sm btn-outline-secondary"
+                    hx-get="@Url.Page("./Index", "EditRow", new { id = item.ItemNo, isEditing = false })"
+                    hx-target="#@rowId"
+                    hx-swap="outerHTML">Cancel</button>
+        </td>
+        
+        <!-- EDITABLE ItemNo with Original stored as hidden field -->
+        <td class="fw-semibold text-nowrap">
+            <input class="form-control form-control-sm" 
+                   name="ItemNo" 
+                   value="@item.ItemNo" 
+                   maxlength="15"
+                   placeholder="YPT-2415-07" 
+                   title="Format: YPT-2415-07, YPB-4845-34, YPC-10006, YPP-48x45" />
+            <input type="hidden" name="OriginalItemNo" value="@item.ItemNo" />
+        </td>
+        
+        <td>
+            <input class="form-control form-control-sm" name="PackingCode" value="@item.PackingCode" maxlength="15" />
+        </td>
+        <td>
+            <input class="form-control form-control-sm" name="PrefixCode" value="@item.PrefixCode" maxlength="15" />
+        </td>
+        <td>
+            <input class="form-control form-control-sm" name="ContainerNumber" value="@item.ContainerNumber" maxlength="15" />
+        </td>
+        <td><input class="form-control form-control-sm" name="OutsideLength" value="@item.OutsideLength" type="number" step="0.01" /></td>
+        <td><input class="form-control form-control-sm" name="OutsideWidth" value="@item.OutsideWidth" type="number" step="0.01" /></td>
+        <td><input class="form-control form-control-sm" name="OutsideHeight" value="@item.OutsideHeight" type="number" step="0.01" /></td>
+        <td><input class="form-control form-control-sm" name="CollapsedHeight" value="@item.CollapsedHeight" type="number" step="0.01" /></td>
+        <td><input class="form-control form-control-sm" name="Weight" value="@item.Weight" type="number" step="0.01" /></td>
+        <td><input class="form-control form-control-sm" name="PackQuantity" value="@item.PackQuantity" type="number" min="0" /></td>
+        <td><input class="form-control form-control-sm" name="AlternateId" value="@item.AlternateId" maxlength="15" /></td>
+    </tr>
+}
