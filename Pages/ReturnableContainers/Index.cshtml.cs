@@ -17,18 +17,15 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IAuditService _auditService;
-        private readonly ILogger<IndexModel> _logger;
 
         public IndexModel(
             AppDbContext context,
             IUserService userService,
-            IAuditService auditService,
-            ILogger<IndexModel> logger)
+            IAuditService auditService)
         {
             _context = context;
             _userService = userService;
             _auditService = auditService;
-            _logger = logger;
         }
 
         public IList<ReturnableContainers> ReturnableContainers { get; set; } = default!;
@@ -44,12 +41,9 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!CanView)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} attempted to view containers without permission", currentUser);
                 TempData["ErrorMessage"] = "You do not have permission to view containers.";
                 return RedirectToPage("/Index");
             }
-
-            _logger.LogInformation("User {CurrentUser} accessed containers (CanEdit: {CanEdit})", currentUser, CanEdit);
 
             // Guard against legacy rows with NULL Item_No to avoid SqlNullValueException
             ReturnableContainers = await _context.ReturnableContainers
@@ -68,7 +62,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!canEdit)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} attempted to edit without permission", currentUser);
                 // Return read-only row
                 var item = await _context.ReturnableContainers.AsNoTracking().FirstOrDefaultAsync(x => x.ItemNo == id);
                 return Partial("_Row", new ReturnableContainersRowModel { Item = item ?? new ReturnableContainers { ItemNo = id }, IsEditing = false });
@@ -90,7 +83,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!canEdit)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} with role Viewer attempted to save changes", currentUser);
                 // Return read-only row (block the save)
                 var existingItem = await _context.ReturnableContainers.AsNoTracking().FirstOrDefaultAsync(x => x.ItemNo == OriginalItemNo);
                 return Partial("_Row", new ReturnableContainersRowModel { Item = existingItem ?? item, IsEditing = false });
@@ -130,7 +122,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                 string.IsNullOrWhiteSpace(item.PackingCode) || 
                 string.IsNullOrWhiteSpace(item.PrefixCode))
             {
-                _logger.LogWarning("Validation failed: Missing required fields for {ItemNo}", OriginalItemNo);
                 return Partial("_Row", new ReturnableContainersRowModel { Item = item, IsEditing = true });
             }
 
@@ -138,14 +129,12 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
             var itemNoRegex = new Regex(@"^[A-Z]{3}-[A-Za-z0-9]+(?:[-xX][A-Za-z0-9]+)*$");
             if (!itemNoRegex.IsMatch(item.ItemNo))
             {
-                _logger.LogWarning("Validation failed: Invalid ItemNo format for {ItemNo}", item.ItemNo);
                 return Partial("_Row", new ReturnableContainersRowModel { Item = item, IsEditing = true });
             }
 
             var existing = await _context.ReturnableContainers.FirstOrDefaultAsync(x => x.ItemNo == OriginalItemNo);
             if (existing == null)
             {
-                _logger.LogWarning("Container not found: {ItemNo}", OriginalItemNo);
                 return Partial("_Row", new ReturnableContainersRowModel { Item = item, IsEditing = false });
             }
 
@@ -161,7 +150,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
                 if (exists)
                 {
-                    _logger.LogWarning("Duplicate ItemNo detected: {ItemNo}", item.ItemNo);
                     return Partial("_Row", new ReturnableContainersRowModel { Item = item, IsEditing = true });
                 }
             }
@@ -217,10 +205,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                     // Log the ItemNo change as an update
                     await _auditService.LogUpdateAsync(newContainer.ItemNo, oldContainer, newContainer, currentUser);
 
-                    _logger.LogInformation("SUCCESS: User {CurrentUser} changed ItemNo from {OldItemNo} to {NewItemNo}",
-                        currentUser, OriginalItemNo, item.ItemNo);
-
-                   
                     await transaction.CommitAsync();
 
                     return Partial("_Row", new ReturnableContainersRowModel { Item = newContainer, IsEditing = false });
@@ -244,20 +228,16 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                     // Log the UPDATE action with old and new values
                     await _auditService.LogUpdateAsync(item.ItemNo, oldContainer, existing, currentUser);
 
-                    _logger.LogInformation("SUCCESS: User {CurrentUser} successfully updated container {ItemNo}", 
-                        currentUser, item.ItemNo);
-
                     // COMMIT - Both update and audit log succeed together
                     await transaction.CommitAsync();
 
                     return Partial("_Row", new ReturnableContainersRowModel { Item = existing, IsEditing = false });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // ROLLBACK on any error - Nothing gets saved
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "ERROR: Failed to update container {ItemNo}", item.ItemNo);
 
                 // Return the item in edit mode so user can try again
                 return Partial("_Row", new ReturnableContainersRowModel { Item = item, IsEditing = true });

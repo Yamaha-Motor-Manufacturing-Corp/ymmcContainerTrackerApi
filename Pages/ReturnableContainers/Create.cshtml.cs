@@ -18,14 +18,14 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IAuditService _auditService;
-        private readonly ILogger<CreateModel> _logger;
+        
 
-        public CreateModel(AppDbContext context, IUserService userService, IAuditService auditService, ILogger<CreateModel> logger)
+        public CreateModel(AppDbContext context, IUserService userService, IAuditService auditService)
         {
             _context = context;
             _userService = userService;
             _auditService = auditService;
-            _logger = logger;
+            
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -36,7 +36,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!canEdit)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} attempted to access Create page without permission", currentUser);
                 TempData["ErrorMessage"] = "You do not have permission to create containers.";
                 return RedirectToPage("./Index");
             }
@@ -55,7 +54,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!canEdit)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} attempted to POST create without permission", currentUser);
                 TempData["ErrorMessage"] = "You do not have permission to create containers.";
                 return RedirectToPage("./Index");
             }
@@ -129,8 +127,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
                 // COMMIT - Both create and audit log succeed together
                 await transaction.CommitAsync();
-
-                _logger.LogInformation("SUCCESS: User {CurrentUser} created new container {ItemNo}", currentUser, ReturnableContainers.ItemNo);
                 TempData["SuccessMessage"] = $"Container {ReturnableContainers.ItemNo} successfully created.";
 
                 return RedirectToPage("./Index");
@@ -139,7 +135,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
             {
                 // ROLLBACK on any error - Nothing gets saved
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "ERROR: Failed to create container {ItemNo}", ReturnableContainers.ItemNo);
                 TempData["ErrorMessage"] = "An error occurred while creating the container. Please try again.";
                 return Page();
             }

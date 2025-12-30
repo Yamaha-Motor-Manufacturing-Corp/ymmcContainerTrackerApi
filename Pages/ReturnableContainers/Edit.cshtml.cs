@@ -18,18 +18,15 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly IAuditService _auditService;
-        private readonly ILogger<EditModel> _logger;
 
         public EditModel(
             AppDbContext context,
             IUserService userService,
-            IAuditService auditService,
-            ILogger<EditModel> logger)
+            IAuditService auditService)
         {
             _context = context;
             _userService = userService;
             _auditService = auditService;
-            _logger = logger;
         }
 
         [BindProperty]
@@ -46,7 +43,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!canEdit)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} attempted to access Edit page without permission", currentUser);
                 TempData["ErrorMessage"] = "You do not have permission to edit containers.";
                 return RedirectToPage("./Index");
             }
@@ -76,7 +72,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
 
             if (!canEdit)
             {
-                _logger.LogWarning("BLOCKED: User {CurrentUser} attempted to POST edit without permission", currentUser);
                 TempData["ErrorMessage"] = "You do not have permission to edit containers.";
                 return RedirectToPage("./Index");
             }
@@ -170,9 +165,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                         oldContainer,
                         ReturnableContainers,
                         currentUser);
-
-                    _logger.LogInformation("SUCCESS: User {CurrentUser} changed ItemNo from {OldItemNo} to {NewItemNo}",
-                        currentUser, OriginalItemNo, ReturnableContainers.ItemNo);
                 }
                 else
                 {
@@ -186,9 +178,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                         oldContainer,
                         ReturnableContainers,
                         currentUser);
-
-                    _logger.LogInformation("SUCCESS: User {CurrentUser} edited container {ItemNo}", 
-                        currentUser, ReturnableContainers.ItemNo);
                 }
 
                 // COMMIT - Both update and audit log succeed together
@@ -222,7 +211,6 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
             {
                 // ROLLBACK on any error - Nothing gets saved
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "ERROR: Failed to edit container {ItemNo}", ReturnableContainers.ItemNo);
                 TempData["ErrorMessage"] = "An error occurred while updating the container. Please try again.";
                 return Page();
             }
