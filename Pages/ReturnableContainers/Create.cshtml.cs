@@ -60,22 +60,33 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                 return RedirectToPage("./Index");
             }
 
-            // Normalize key fields before validation
+            // Normalize uppercase
             string Normalize(string? s)
             {
                 var trimmed = (s ?? string.Empty).Trim();
                 if (trimmed.Length == 0) return string.Empty;
-                // collapse internal whitespace to single space
                 trimmed = Regex.Replace(trimmed, "\\s+", " ");
-                // uppercase for consistency (ItemNo must be uppercase)
                 return trimmed.ToUpperInvariant();
             }
 
-            ReturnableContainers.ItemNo = Normalize(ReturnableContainers.ItemNo);
+            // only capitalize the prefix
+            string NormalizeItemNo(string? itemNo)
+            {
+                var trimmed = (itemNo ?? string.Empty).Trim();
+                if (trimmed.Length < 3) return trimmed;
+                
+                // Capitalize only the prefix
+                var prefix = trimmed.Substring(0, 3).ToUpperInvariant();
+                var rest = trimmed.Substring(3);
+                
+                return prefix + rest;
+            }
+
+            ReturnableContainers.ItemNo = NormalizeItemNo(ReturnableContainers.ItemNo);
             ReturnableContainers.PackingCode = Normalize(ReturnableContainers.PackingCode);
             ReturnableContainers.PrefixCode = Normalize(ReturnableContainers.PrefixCode);
 
-            //  normalized ItemNo to uppercase
+            // Re-validate normalized ItemNo
             ModelState.Remove("ReturnableContainers.ItemNo");
             if (!TryValidateModel(ReturnableContainers, "ReturnableContainers"))
             {
@@ -94,9 +105,10 @@ namespace YmmcContainerTrackerApi.Pages_ReturnableContainers
                 return Page();
             }
 
+            // Check for duplicates (case-insensitive comparison for safety)
             var exists = await _context.ReturnableContainers
                 .AsNoTracking()
-                .AnyAsync(rc => rc.ItemNo == ReturnableContainers.ItemNo);
+                .AnyAsync(rc => rc.ItemNo.ToUpper() == ReturnableContainers.ItemNo.ToUpper());
 
             if (exists)
             {
